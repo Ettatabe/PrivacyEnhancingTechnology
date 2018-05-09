@@ -5,7 +5,15 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import padding
+import os
 
+def generate_IV(num_bytes):
+    iv = os.urandom(num_bytes)
+    return iv
+
+def generate_Key(num_bytes):
+    key = os.urandom(num_bytes)
+    return key
 
 def pkcs7_pad(message):
     padder = padding.PKCS7(128).padder()
