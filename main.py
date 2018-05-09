@@ -1,6 +1,12 @@
 import socket               # Import socket module)
 import os
 import crypto
+from Crypto.PublicKey import RSA
+
+
+mixnet1_pubkey = RSA.importKey(open('public-key-mix-1.pem').read())
+mixnet2_pubkey = RSA.importKey(open('public-key-mix-2.pem').read())
+mixnet3_pubkey = RSA.importKey(open('public-key-mix-3.pem').read())
 
 def unsigned(n):
     return n & 0xFFFFFFFF
@@ -13,23 +19,39 @@ def create_payload(recipient, message):
 
     return payload
 
-def construct_msg(recipient, msg):
-    payload = create_payload(recipient, msg)
+def construct_onion_layer(pubkey, iv1, key1, iv2, key2, payload):
+    padded_payload = crypto.pkcs7_pad(bytes(payload))
+    aes_encryption = crypto.aes_encrypt(iv2, key2, padded_payload)
+    rsa_encryption = crypto.rsa_pkcs1_oaep_encrypt(pubkey, iv1 + key1)
+    E = rsa_encryption + aes_encryption
 
+    return E
 
 s = socket.socket()
 host = "pets.ewi.utwente.nl"
-port = 55146
+port = 52872
 
-message = 'hey'
+'''Generate random IVs and Keys'''
+IV1 = crypto.generate_IV(16)
+IV2 = crypto.generate_IV(16)
+IV3 = crypto.generate_IV(16)
+key1 = crypto.generate_Key(16)
+key2 = crypto.generate_Key(16)
+key3 = crypto.generate_Key(16)
 
+message = "Hey"
+'''Make the actual message'''
 payload = create_payload('Alice', message)
 
-print(payload)
-print(crypto.rsa_temp())
+'''Construct the onion layers'''
+E1 = construct_onion_layer(mixnet3_pubkey, IV3, key3, IV1, key1, payload)
+E2 = construct_onion_layer(mixnet2_pubkey, IV2, key2, IV2, key2, E1)
+E3 = construct_onion_layer(mixnet1_pubkey, IV1, key1, IV1, key1, E2)
+
+print(E3)
 
 s.connect((host, port))
-s.send(payload)
+s.send(E3)
 
 print(s.recv(1024))
 

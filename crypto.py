@@ -60,9 +60,8 @@ def aes_encrypt(iv, key, plain_text):
 
     return cipher_text
 
-def rsa_pkcs1_oaep_encrypt(plain_text):
-    key = RSA.importKey(open('public-key-mix-1.pem').read())
-    cipher = PKCS1_OAEP.new(key)
+def rsa_pkcs1_oaep_encrypt(publickey , plain_text):
+    cipher = PKCS1_OAEP.new(publickey)
     cipher_text = cipher.encrypt(plain_text)
 
     return cipher_text
