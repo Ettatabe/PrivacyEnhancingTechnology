@@ -28,14 +28,14 @@ def pkcs7_unpad(padded_data):
     data = unpadder.update(padded_data)
     data + unpadder.finalize()
 
-with open("public-key-mix-1.pem", "rb") as key_file:
-    public_key_mix_1 = serialization.load_der_public_key(key_file.read(), backend=default_backend())
+#with open("public-key-mix-1.pem", "rb") as key_file:
+#    public_key_mix_1 = serialization.load_der_public_key(key_file.read(), backend=default_backend())
 
-with open("public-key-mix-2.pem", "rb") as key_file:
-    public_key_mix_2 = serialization.load_der_public_key(key_file.read(), backend=default_backend())
+#with open("public-key-mix-2.pem", "rb") as key_file:
+#    public_key_mix_2 = serialization.load_der_public_key(key_file.read(), backend=default_backend())
 
-with open("public-key-mix-3.pem", "rb") as key_file:
-    public_key_mix_3 = serialization.load_der_public_key(key_file.read(), backend=default_backend())
+#with open("public-key-mix-3.pem", "rb") as key_file:
+#    public_key_mix_3 = serialization.load_der_public_key(key_file.read(), backend=default_backend())
 
 private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
 
