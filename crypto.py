@@ -5,6 +5,9 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import padding
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.PublicKey import RSA
+
 import os
 
 def generate_IV(num_bytes):
@@ -56,6 +59,21 @@ def aes_encrypt(iv, key, plain_text):
     cipher_text = encryptor.update(plain_text) + encryptor.finalize()
 
     return cipher_text
+
+def rsa_pkcs1_oaep_encrypt(plain_text):
+    key = RSA.importKey(open('public-key-mix-1.pem').read())
+    cipher = PKCS1_OAEP.new(key)
+    cipher_text = cipher.encrypt(plain_text)
+
+    return cipher_text
+
+def rsa_pkcs1_oaep_decrypt(cipher_text):
+    key = RSA.importKey(open('private.pem').read())
+    cipher = PKCS1_OAEP.new(key)
+    plain_text = cipher.decrypt(cipher_text)
+
+    return plain_text
+
 
 def aes_decrypt(iv, key, plain_text):
     backend = default_backend()

@@ -26,6 +26,7 @@ message = 'hey'
 payload = create_payload('Alice', message)
 
 print(payload)
+print(crypto.rsa_temp())
 
 s.connect((host, port))
 s.send(payload)
