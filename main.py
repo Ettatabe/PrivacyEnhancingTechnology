@@ -1,12 +1,42 @@
 import socket               # Import socket module)
-import os
 import crypto
-from Crypto.PublicKey import RSA
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
+
+with open("rsa_public_key.pem", "rb") as key_file:
+    my_pubkey = serialization.load_pem_public_key(
+         key_file.read(),
+         backend=default_backend()
+     )
+
+with open("rsa_private_key.pem", "rb") as key_file:
+    my_privkey = serialization.load_pem_private_key(
+        key_file.read(),
+        password=bytes('password', 'ascii'),
+        backend=default_backend()
+    )
 
 
-mixnet1_pubkey = RSA.importKey(open('public-key-mix-1.pem').read())
-mixnet2_pubkey = RSA.importKey(open('public-key-mix-2.pem').read())
-mixnet3_pubkey = RSA.importKey(open('public-key-mix-3.pem').read())
+with open("public-key-mix-1.pem", "rb") as key_file:
+    mixnet1_pubkey = serialization.load_pem_public_key(
+         key_file.read(),
+         backend=default_backend()
+     )
+
+with open("public-key-mix-1.pem", "rb") as key_file:
+    mixnet2_pubkey = serialization.load_pem_public_key(
+        key_file.read(),
+        backend=default_backend()
+    )
+
+with open("public-key-mix-1.pem", "rb") as key_file:
+    mixnet3_pubkey = serialization.load_pem_public_key(
+        key_file.read(),
+        backend=default_backend()
+    )
+
+string = bytes("bla", 'ascii')
+print(crypto.rsa_decrypt(my_privkey, crypto.rsa_encrypt(my_pubkey, string)))
 
 def unsigned(n):
     return n & 0xFFFFFFFF
@@ -21,14 +51,14 @@ def create_payload(recipient, message):
 def construct_onion_layer(pubkey, iv1, key1, iv2, key2, payload):
     padded_payload = crypto.pkcs7_pad(bytes(payload))
     aes_encryption = crypto.aes_encrypt(iv2, key2, padded_payload)
-    rsa_encryption = crypto.rsa_pkcs1_oaep_encrypt(pubkey, iv1 + key1)
+    rsa_encryption = crypto.rsa_encrypt(pubkey, iv1 + key1)
     E = rsa_encryption + aes_encryption
 
     return E
 
 s = socket.socket()
 host = "pets.ewi.utwente.nl"
-port = 52192
+port = 57022
 
 '''Generate random IVs and Keys'''
 IV1 = crypto.generate_IV(16)
@@ -48,6 +78,9 @@ E2 = construct_onion_layer(mixnet2_pubkey, IV2, key2, IV2, key2, E1)
 E3 = construct_onion_layer(mixnet1_pubkey, IV1, key1, IV1, key1, E2)
 
 final_msg = bytearray(len(E3).to_bytes(4, byteorder='big', signed=False) + E3)
+print(final_msg)
+
+plaintext = "bla"
 
 s.connect((host, port))
 s.send(final_msg)
