@@ -25,13 +25,13 @@ with open("public-key-mix-1.pem", "rb") as key_file:
          backend=default_backend()
      )
 
-with open("public-key-mix-1.pem", "rb") as key_file:
+with open("public-key-mix-2.pem", "rb") as key_file:
     mixnet2_pubkey = serialization.load_pem_public_key(
         key_file.read(),
         backend=default_backend()
     )
 
-with open("public-key-mix-1.pem", "rb") as key_file:
+with open("public-key-mix-3.pem", "rb") as key_file:
     mixnet3_pubkey = serialization.load_pem_public_key(
         key_file.read(),
         backend=default_backend()
@@ -55,7 +55,7 @@ def construct_onion_layer(pubkey, iv1, key1, iv2, key2, payload):
     aes_encryption = crypto.aes_encrypt(iv2, key2, padded_payload)
     rsa_encryption = crypto.rsa_encrypt(pubkey, iv1 + key1)
     rsa_string = str(''.join(format(x, '02x') for x in rsa_encryption))
-    print("Length RSA: " + str(len(rsa_string)))
+    print("RSA string: " + rsa_string)
 
     E = rsa_encryption + aes_encryption
 
@@ -64,7 +64,7 @@ def construct_onion_layer(pubkey, iv1, key1, iv2, key2, payload):
 
 s = socket.socket()
 host = "pets.ewi.utwente.nl"
-port = 53096
+port = 51553
 
 '''Generate random IVs and Keys'''
 IV1 = crypto.generate_IV(16)
