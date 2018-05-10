@@ -31,12 +31,12 @@ def pkcs7_unpad(padded_data):
     data + unpadder.finalize()
 
 def rsa_encrypt(public_key, plain_text):
-    cipher_text = public_key.encrypt(plain_text, asym_padding.OAEP(mgf = padding.MGF1(algorithm=hashes.SHA256()), algorithm = hashes.SHA256(), label = None))
+    cipher_text = public_key.encrypt(plain_text, asym_padding.OAEP(mgf = padding.MGF1(algorithm=hashes.SHA1()), algorithm = hashes.SHA1(), label = None))
 
     return cipher_text
 
 def rsa_decrypt(private_key, cipher_text):
-    plain_text = private_key.decrypt(cipher_text, asym_padding.OAEP(mgf = padding.MGF1(algorithm=hashes.SHA256()), algorithm = hashes.SHA256(), label = None))
+    plain_text = private_key.decrypt(cipher_text, asym_padding.OAEP(mgf = padding.MGF1(algorithm=hashes.SHA1()), algorithm = hashes.SHA1(), label = None))
 
     return plain_text
 

@@ -64,7 +64,7 @@ def construct_onion_layer(pubkey, iv1, key1, iv2, key2, payload):
 
 s = socket.socket()
 host = "pets.ewi.utwente.nl"
-port = 51553
+port = 50627
 
 '''Generate random IVs and Keys'''
 IV1 = crypto.generate_IV(16)
